@@ -27,7 +27,7 @@ shiny::runGitHub( "FISH6001_apps","MatthewRobertson2452", subdir="/Logistic_grow
 
 I have also included two markdown documents which walk through
 simulations for a surplus production model and an age-structured
-population dynamics model. Students can just examine the output html
+population dynamics model. Students can just examine the output .md
 files for these models or if they are more interested in understanding
 how these models work, they can open the files themselves and modify
 some of the parameters to see how they modify the simulations. If
