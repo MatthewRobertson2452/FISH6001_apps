@@ -2,7 +2,7 @@
 title: "Surplus Production Model"
 author: "Matt Robertson"
 date: "2024-02-09"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
