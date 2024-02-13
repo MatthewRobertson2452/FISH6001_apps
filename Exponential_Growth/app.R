@@ -11,14 +11,14 @@ ui <- fluidPage(
     
     #Text and equations 
     withMathJax(),
-    helpText('Exponential population growth is defined by the equation $$f(N)=N_0(1+r)^t$$'),
+    helpText('Exponential population growth is defined by the equation $$N_t=N_0e^{r_{max}t}$$'),
     helpText('\\(N_0\\) is the initial population size'),
-    helpText('\\(r\\) is the rate of growth'),
+    helpText('\\(r_{max}\\) is the maximum rate of growth'),
     helpText('\\(t\\) is the number of time steps'),
     
     helpText('This growth is also defined using the differential equation: $$\\frac{dN}{dt}=rN$$'),
     helpText('\\(\\frac{dN}{dt}\\) is the population growth rate'),
-    helpText('\\(r\\) is still the rate of growth'),
+    helpText('\\(r_{max}\\) is still the rate of growth'),
     helpText('\\(N\\) is the population size'),
     helpText('Regardless, both equations, produce the same output:'),
     # Sidebar with a slider input 

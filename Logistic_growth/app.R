@@ -45,7 +45,7 @@ ui <- fluidPage(
     )
   ),
   
-  helpText('This growth is also defined using the continuous (aka. differential) equation: $$\\frac{dN}{dt}=r_{max}(\\frac{K-N}{K})N$$'),
+  helpText('This growth is also defined using the continuous (aka. differential) equation: $$\\frac{dN}{dt}=r_{max}N(\\frac{1-N}{K})$$'),
   helpText('\\(\\frac{dN}{dt}\\) is the population growth rate'),
   helpText('Once we treat this as a differential equation, we no longer need to worry about the midpoint parameter.'),
   helpText('Additionally, the continuous formulation allows us to simply consider interesting aspects of growth rates...'),
