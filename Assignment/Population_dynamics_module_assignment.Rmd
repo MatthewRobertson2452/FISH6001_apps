@@ -1,0 +1,282 @@
+---
+title: "Population dynamics module assignment"
+author: "YOUR NAME HERE"
+date: "SUBMISSION DATE HERE"
+output: pdf_document
+fontsize: 12pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+```
+
+# Data Setup
+
+In this assignment you are going to modify the age-structured simulation that we used earlier in the course to match the basic biology of your stock. There should be a CSAS report or other stock assessment document that contains much of this information, if it exists for your stock. If it doesn't exist in a government report, I would like you to find a different citation for the biological information for your stock. If there is no research on your particular stock for the specified life history information, then you can use Fishbase or some other source that describes that information for your species. Finally, if there is no research on your species for a life history trait, you can give it your best guess, but you will need to indicate this and I will search to see if there is truly no research on your species for that trait.
+
+Similar to the example in class, the simulation will run for 50 years, lets say from 2000 to 2050.
+
+```{r time}
+yrs<-seq(from=2000, to=2050)
+nyears<-length(yrs)
+```
+
+## Number of ages (2 points)
+
+What is the maximum age of your stock? (1 pt) Provide a citation (1 pt).
+
+```{r nages}
+#Change the value to match your stock's value
+nages<-15
+```
+
+## Maximum length (2 points)
+
+What is $L_{inf}$ for your stock? (1 pt) Provide a citation (1 pt).
+
+```{r linf}
+#Change the value to match your stock's value
+linf<-100
+```
+
+```{r lplot}
+laa<-rep(NA, nages)
+for(i in 1:nages){
+laa[i]<-linf*(1-exp(-(5/nages)*(i-(linf/1000))))
+}
+
+plot(laa~seq(from=1, to=nages, by=1), pch=19, xlab="Age",
+     ylab="Mean Length (cm)", las=1)
+lines(laa~seq(from=1, to=nages, by=1))
+```
+
+## Length-weight relationship (2 points)
+
+What is the allometric growth coefficient ($b$) for your stock? (1 pt) Provide a citation (1 pt).
+
+```{r b}
+#Change the value to match your stock's value
+b<-3
+```
+
+```{r weight, fig.height=8}
+
+waa<-rep(NA, nages)
+for(i in 1:nages){
+  waa[i]<-(0.001*laa[i]^b)/100
+  }
+
+par(mfrow=c(2,1))
+plot(waa~laa, pch=19, xlab="Mean Length (cm)", ylab="Mean Weight (kg)",
+     las=1, xlim=c(min(laa)-1,max(laa)+1), ylim=c(0,max(waa)))
+lines(waa~laa)
+plot(waa~seq(from=1, to=nages, by=1), pch=19, xlab="Age", ylab="Mean Weight",
+     las=1)
+lines(waa~seq(from=1, to=nages, by=1))
+```
+
+## Maturity (2 points)
+
+What is the length at 50% maturity ($L_{50}$) for females of your stock? (1 pt) Provide a citation (1 pt).
+
+```{r}
+#Change the value to match your stock's value
+l50<-70
+```
+
+```{r maturity}
+maa<-rep(NA, nages)
+for(i in 1:nages){
+  maa[i]<-1/(1+exp(-0.5*(laa[i]-l50)))
+}
+plot(maa~seq(from=1, to=nages, by=1), pch=19, xlab="Age",
+     ylab="Probability of maturity", las=1)
+lines(maa~seq(from=1, to=nages, by=1))
+```
+
+Like was discussed in lecture, we are going to assume that natural mortality ($M$) is constant at 0.2. No need to change this for the assignment.
+
+```{r M}
+M<-matrix(0.2, nyears,nages)
+```
+
+```{r emptystuff, echo=FALSE}
+N<-matrix(NA, nyears,nages)
+log_N<-matrix(NA, nyears,nages)
+B<-matrix(NA, nyears,nages)
+F<-matrix(NA, nyears,nages)
+Z<-matrix(NA, nyears,nages)
+R<-rep(NA, nyears)
+log_R<-rep(NA, nyears)
+SSB<-rep(NA, nyears)
+```
+
+Once all of these components for the population have been set-up, we can start to think about the fishery.
+
+# The fishery
+
+For the purposes of this simulation, I am going to assume that the fishery only targets mature fish and also has followed a specific pattern of exploitation over time.
+
+In this case, fishing mortality will start at 0 in 2000 and steadily increase to a maximum value of 0.2 at which point it will level off and the fishery will maintain at a steady amount of fishing pressure until the end of the simulation.
+
+None of the code in this section needs to be modified.
+
+```{r sel, fig.height=8}
+Fsel<-ifelse(maa<0.5, 0,1)
+par(mfrow=c(2,1))
+plot(Fsel~maa,pch=19, xlab="Probability of Maturity At Age",
+     ylab="Fishery Selectivity", las=1)
+lines(Fsel~maa)
+plot(Fsel~laa,pch=19, xlab="Length At Age", ylab="Fishery Selectivity", 
+     las=1)
+lines(Fsel~laa)
+```
+
+```{r fhistory}
+Ftrend<-rep(NA, nyears)
+incF<-round(nyears*0.25,0)
+Ftrend[1:incF]<-seq(from=0, to=0.2, length=incF)
+Ftrend[(incF+1):nyears]<-0.2
+
+plot(Ftrend~yrs,pch=19, xlab="Year", ylab="Fishing Mortality", las=1)
+lines(Ftrend~yrs)
+```
+
+# Simulation
+
+Now that the species biology and fishery have been defined, we can run a theoretical simulation of how this fishery would impact a theoretical population with your stock's biology.
+
+None of the code in this section needs to be modified.
+
+```{r, echo=FALSE}
+set.seed(333)
+
+juv_N<-2500/mean(waa*maa)
+starting_N<-juv_N*exp(-0.1*seq(from=0, to=nages-1))
+
+N[1,]<-starting_N
+
+log_N[1,]<-log(N[1,])
+B[1,]<-N[1,]*waa
+SSB[1]<-sum(B[1,]*0.5*maa)
+
+
+for(i in 1:nyears){
+F[i,] <- Ftrend[i]*Fsel
+}
+
+for(y in 1:nyears){
+  for(a in 1:nages){
+    if(Fsel[a]>0){
+F[y,a]<-abs(F[y,a]+rnorm(1,0,0.05))
+    } 
+}
+}
+
+
+
+for(y in 2:nyears){
+  abs_R<-((10/mean(maa*waa))*SSB[y-1])/(1+0.001*SSB[y-1])
+  R[y]<-abs(abs_R +rnorm(1,0,abs_R/2))
+  N[y,1]<-R[y]
+  B[y,1]<-N[y,1] * waa[1]
+  
+  for(a in 2:nages){
+      N[y,a]<-N[y-1,a-1]*exp(-(M[y-1,a-1]+F[y-1,a-1]))
+      B[y,a]<-N[y,a] * waa[a]
+    }
+  SSB[y]<-sum(B[y,]*maa*0.5)
+}
+```
+
+# Population dynamics comparison
+
+After the simulation runs, we can examine how the population actually changed over time. In the following sections I will ask you to compare your stock to mine. These comparisons should focus on large changes rather than interannual variability. Much of the noise will be driven by the simulation and will not be meaningful, but you should be able to identify large changes that are driven by differences in life-history traits.
+
+The life-history traits for "Matts stock" are the same as what we examined for the age-structured model in class. So, $nages=15$, $L_{inf}=100$, $b=3$, and $L_{50}=70$. When describing differences in the population dynamics, think about how our simulated fishery might be impacting these populations differently based on the defined life-history traits. I will mark your assignment based on thought process rather than being correct about why a specific change occurred. 
+
+To make sure you can identify which figure is for your stock please modify the following code to include your stock name:
+
+```{r name}
+# modify the following code with your stocks name
+stock<-"YOURSTOCK"
+```
+
+```{r loadsim, echo=FALSE}
+load("simulated_pop_dy.RData")
+```
+
+## SSB and Abundance (2 points)
+
+Please describe any differences that you see between your stocks SSB and abundance compared to my stocks SSB (0.5 pts) and abundance (0.5 points). If there are any differences, why do you think they may be occurring? (1 point)  
+
+```{r biomass, fig.height=8}
+par(mfrow=c(2,1))
+plot(SSB~yrs, type="l", xlab="Year", ylab="Spawning Stock Biomass", 
+     las=1, lwd=2, main=stock)
+plot(sim_pop_dy$SSB~yrs, type="l", xlab="Year", ylab="Spawning Stock Biomass",
+     las=1, lwd=2, main="Matts Stock")
+```
+
+```{r abundance, fig.height=8}
+par(mfrow=c(2,1))
+plot(rowSums(N)~yrs, type="l", xlab="Year", ylab="Total Abundance", las=1,
+     lwd=2, main=stock)
+plot(rowSums(sim_pop_dy$N)~yrs, type="l", xlab="Year", ylab="Total Abundance",
+     las=1, lwd=2, main="Matts Stock")
+```
+
+## Recruitment (1 point)
+
+We can also look to see how recruitment has varied with stock size. Here, I used a Beverton-Holt recruitment function with some random variability added in.
+
+Please describe any differences that you see between your stock's recruitment and mine (0.5 points). If there are any differences, why do you think they may be occurring? (0.5 points)
+
+```{r sr, fig.height=8}
+sim_ssb<-seq(from=0, to=max(SSB), by=1)
+
+par(mfrow=c(2,1))
+plot(R~SSB, xlab="Spawning Stock Biomass", ylab="Recruitment (numbers)",
+     las=1, lwd=2, pch=19, xlim=c(0,max(SSB)+100),
+     ylim=c(0, max(R[2:nyears])+10), main=stock)
+lines(sim_ssb, ((10/mean(maa*waa))*sim_ssb)/(1+0.001*sim_ssb))
+
+sim_ssb<-seq(from=0, to=max(sim_pop_dy$SSB), by=1)
+plot(sim_pop_dy$R~sim_pop_dy$SSB, xlab="Spawning Stock Biomass",
+     ylab="Recruitment (numbers)", las=1, lwd=2, pch=19,
+     xlim=c(0,max(sim_pop_dy$SSB)+100),
+     ylim=c(0, max(sim_pop_dy$R[2:nyears])+100), main="Matts Stock")
+lines(sim_ssb,
+      (10/mean(sim_pop_dy$maa*sim_pop_dy$waa)*sim_ssb)/(1+0.001*sim_ssb))
+```
+
+## Abundance at age (2 points)
+
+Please describe any differences that you see between your stock's abundance at age and mine (1 point). If there are any differences, why do you think they may be occurring? (1 point)
+
+```{r N_mat}
+library(ggplot2)
+N_df<-data.frame(N=c(N),year=rep(yrs, nages), age=(rep(seq(from=1, to=nages),
+                                                       each=51)))
+
+ggplot(data=N_df, aes(x=year, y=N))+xlab("Year")+ylab("Abundance at Age")+
+  geom_line()+ggtitle(stock)+
+  facet_wrap(~age, scales = "free_y")+
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+```
+
+```{r N_mystock}
+N_df<-data.frame(N=c(sim_pop_dy$N),year=rep(yrs, sim_pop_dy$nages),
+                 age=(rep(seq(from=1, to=sim_pop_dy$nages), each=51)))
+
+ggplot(data=N_df, aes(x=year, y=N))+xlab("Year")+ylab("Abundance at Age")+
+  geom_line()+ggtitle("Matts Stock")+
+  facet_wrap(~age, scales = "free_y")+
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+```
+
+
+## Sustainability (2 points)
+
+Although this simulation does not include reference point calculations, do you think that the simulated fishery is more or less sustainable for your stock than mine? Why?
