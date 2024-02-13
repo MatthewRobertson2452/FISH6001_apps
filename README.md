@@ -5,10 +5,15 @@ Matt Robertson
 
 # Activities
 
-This respository contains shiny apps and simulation-based markdown
-documents to accompany the population dynamics module lectures for FISH
-6001 (Ecology, Management, and Practice of North Atlantic Fisheries) at
-the Marine Institute of Memorial University of Newfoundland.
+This respository contains lecture slides, shiny apps, and
+simulation-based markdown documents for FISH 6001 (Ecology, Management,
+and Practice of North Atlantic Fisheries) at the Marine Institute of
+Memorial University of Newfoundland.
+
+## Lecture slides
+
+The slides can be found as a pdf in the main folder, in the file titled,
+`Fish 6001 - Population dynamics module`.
 
 ## Growth modeling shiny apps
 
