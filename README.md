@@ -5,10 +5,10 @@ Matt Robertson
 
 # Activities
 
-This respository contains lecture slides, shiny apps, and
-simulation-based markdown documents for FISH 6001 (Ecology, Management,
-and Practice of North Atlantic Fisheries) at the Marine Institute of
-Memorial University of Newfoundland.
+This repository contains lecture slides, shiny apps, simulation-based
+markdown documents, and an assignment for FISH 6001 (Ecology,
+Management, and Practice of North Atlantic Fisheries) at the Marine
+Institute of Memorial University of Newfoundland.
 
 ## Lecture slides
 
@@ -38,3 +38,19 @@ how these models work, they can open the files themselves and modify
 some of the parameters to see how they modify the simulations. If
 parameters are modified, the files will need to be knit in order to see
 the effects of those modifications.
+
+## Assignment
+
+The assignment for this module involves using an Rmarkdown simulation to
+examine the theoretical population dynamics for your fish stock. This
+will involve finding the necessary traits as inputs to run the
+population dynamics model (8 points),identifying differences between
+your stock and a pre-defined stock (5 points), and determining whether
+your stock maintains a more sustainable fishery than a pre-defined stock
+(2 points).
+
+To access the assignment you will need to download
+`Population_dynamics_module_assignment.Rmd` and `simulated_pop_dy.RData`
+from the `Assignment` folder. Please make changes and write your answers
+in the markdown file and then submit the markdown file and knitted pdf
+output to my email (<matthew.robertson@mi.mun.ca>).
