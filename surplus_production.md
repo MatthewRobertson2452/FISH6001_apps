@@ -1,7 +1,7 @@
 Surplus Production Model
 ================
 Matt Robertson
-2024-02-09
+March 2025
 
 # Data Setup
 
@@ -84,10 +84,10 @@ lines(B~yrs)
 
 ![](surplus_production_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
-We can then see how the population grwoth rate was changing as biomass
-changed. When we do this, we see that the growth rate is almost inverse
-of the population size, where we see a steady increase followed by a
-plateau.
+We can then see how the population growth rate changed as biomass
+changed. When we do this, we see that the growth rate changes are almost
+inverse of the population size, where we see a steady increase followed
+by a plateau.
 
 ``` r
 plot(pop_growth~yrs, pch=19, xlab="Year", ylab="Annual Population Growth Rate", las=1)

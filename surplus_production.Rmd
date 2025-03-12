@@ -1,7 +1,7 @@
 ---
 title: "Surplus Production Model"
 author: "Matt Robertson"
-date: "2024-02-09"
+date: "`r format(Sys.time(), '%B %Y')`"
 output: github_document
 ---
 
@@ -75,7 +75,7 @@ plot(B~yrs, pch=19, xlab="Year", ylab="Population Biomass", las=1)
 lines(B~yrs)
 ```
 
-We can then see how the population grwoth rate was changing as biomass changed. When we do this, we see that the growth rate is almost inverse of the population size, where we see a steady increase followed by a plateau.
+We can then see how the population growth rate changed as biomass changed. When we do this, we see that the growth rate changes are almost inverse of the population size, where we see a steady increase followed by a plateau.
 
 ```{r}
 plot(pop_growth~yrs, pch=19, xlab="Year", ylab="Annual Population Growth Rate", las=1)
