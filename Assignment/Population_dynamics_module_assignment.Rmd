@@ -9,6 +9,7 @@ fontsize: 12pt
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
+library(ggplot2)
 ```
 
 # Data Setup
@@ -118,7 +119,7 @@ Once all of these components for the population have been set-up, we can start t
 
 For the purposes of this simulation, I am going to assume that the fishery only targets mature fish and also has followed a specific pattern of exploitation over time.
 
-In this case, fishing mortality will start at 0 in 2000 and steadily increase to a maximum value of 0.2 at which point it will level off and the fishery will maintain at a steady amount of fishing pressure until the end of the simulation.
+In this case, fishing mortality will start at 0 in 2000 and steadily increase to a maximum value of 0.3 at which point it will level off and the fishery will maintain at a steady amount of fishing pressure until the end of the simulation.
 
 None of the code in this section needs to be modified.
 
@@ -136,8 +137,8 @@ lines(Fsel~laa)
 ```{r fhistory}
 Ftrend<-rep(NA, nyears)
 incF<-round(nyears*0.25,0)
-Ftrend[1:incF]<-seq(from=0, to=0.2, length=incF)
-Ftrend[(incF+1):nyears]<-0.2
+Ftrend[1:incF]<-seq(from=0, to=0.3, length=incF)
+Ftrend[(incF+1):nyears]<-0.3
 
 plot(Ftrend~yrs,pch=19, xlab="Year", ylab="Fishing Mortality", las=1)
 lines(Ftrend~yrs)
@@ -152,10 +153,17 @@ None of the code in this section needs to be modified.
 ```{r, echo=FALSE}
 set.seed(333)
 
-juv_N<-2500/mean(waa*maa)
-starting_N<-juv_N*exp(-0.1*seq(from=0, to=nages-1))
+#juv_N<-2500/mean(waa*maa)
+#starting_N<-juv_N*exp(-0.1*seq(from=0, to=nages-1))
 
-N[1,]<-starting_N
+R0 <- 1000
+N[1,1] <- R0
+for(a in 2:nages){
+  N[1,a] <- N[1,a-1] * exp(-0.2)
+}
+
+alpha<-10000
+beta<-0.005
 
 log_N[1,]<-log(N[1,])
 B[1,]<-N[1,]*waa
@@ -163,36 +171,87 @@ SSB[1]<-sum(B[1,]*0.5*maa)
 
 
 for(i in 1:nyears){
-F[i,] <- Ftrend[i]*Fsel
+  F[i,] <- Ftrend[i]*Fsel
 }
 
 for(y in 1:nyears){
   for(a in 1:nages){
     if(Fsel[a]>0){
-F[y,a]<-abs(F[y,a]+rnorm(1,0,0.05))
+      F[y,a]<-abs(F[y,a]+rnorm(1,0,0.05))
     } 
-}
+  }
 }
 
+SSB0 <- sum(N[1,] * waa * maa * 0.5)
+h <- 0.75
 
+bev_holt <- function(SSB, R0, SSB0, h) {
+  (4 * h * R0 * SSB) /
+    (SSB0 * (1 - h) + SSB * (5 * h - 1))
+}
+
+sigma_R <- 0.7
 
 for(y in 2:nyears){
-  abs_R<-((10/mean(maa*waa))*SSB[y-1])/(1+0.001*SSB[y-1])
-  R[y]<-abs(abs_R +rnorm(1,0,abs_R/2))
+  R[y] <- bev_holt(SSB[y-1], R0, SSB0, h) *
+    exp(rnorm(1, -0.5 * sigma_R^2, sigma_R))
   N[y,1]<-R[y]
   B[y,1]<-N[y,1] * waa[1]
   
   for(a in 2:nages){
-      N[y,a]<-N[y-1,a-1]*exp(-(M[y-1,a-1]+F[y-1,a-1]))
-      B[y,a]<-N[y,a] * waa[a]
-    }
+    N[y,a]<-N[y-1,a-1]*exp(-(M[y-1,a-1]+F[y-1,a-1]))
+  }
+  N[y,nages] <- N[y-1,nages-1] * exp(-(M[y-1,nages-1] + F[y-1,nages-1])) +
+    N[y-1,nages]   * exp(-(M[y-1,nages]   + F[y-1,nages]))
+  
+  for(a in 2:nages){
+  B[y,a]<-N[y,a] * waa[a]
+  }
+  
   SSB[y]<-sum(B[y,]*maa*0.5)
 }
+
+
+SSB0 <- sum(N[1,] * waa * maa * 0.5)
+
+USR <- 0.5 * SSB0
+LRP <- 0.2 * SSB0
+
+
+equilibrium_yield <- function(F, M, sel, waa, maa, nages, h, R0) {
+  N_eq <- rep(NA, nages)
+  N_eq[1] <- R0
+  
+  Z <- M + F * sel
+  for(a in 2:nages) {
+    N_eq[a] <- N_eq[a-1] * exp(-Z[a-1])
+  }
+  # plus group
+  N_eq[nages] <- N_eq[nages] + N_eq[nages] * exp(-Z[nages])
+  
+  SSB_eq <- sum(N_eq * waa * maa * 0.5)
+  
+  R_eq <- (4*h*R0*SSB_eq) / (SSB0*(1-h) + SSB_eq*(5*h-1))
+  
+  N_eq <- N_eq * (R_eq / R0)
+  
+  C_eq <- sum(N_eq * (F*sel) / Z * (1 - exp(-Z)) * waa)
+  
+  return(list(SSB=SSB_eq, R=R_eq, Y=C_eq))
+}
+
+Fvals <- seq(0, 1, by=0.005)
+yield_vals <- sapply(Fvals, function(F) equilibrium_yield(F, M[1,], Fsel, waa, maa, nages, h, R0)$Y)
+
+Fmsy <- Fvals[which.max(yield_vals)]
+Bmsy <- equilibrium_yield(Fmsy, M[1,], Fsel, waa, maa, nages, h, R0)$SSB
+
+
 ```
 
 # Population dynamics comparison
 
-After the simulation runs, we can examine how the population actually changed over time. In the following sections I will ask you to compare your stock to mine. These comparisons should focus on large changes rather than interannual variability. Much of the noise will be driven by the simulation and will not be meaningful, but you should be able to identify large changes that are driven by differences in life-history traits.
+After the simulation runs, we can examine how the population actually changed over time. In the following sections I will ask you questions, including to compare your stock to mine. Any comparisons should focus on large changes rather than interannual variability. Much of the noise will be driven by the simulation and will not be meaningful, but you should be able to identify large changes that are driven by differences in life-history traits.
 
 The life-history traits for "Matts stock" are the same as what we examined for the age-structured model in class. So, $nages=15$, $L_{inf}=100$, $b=3$, and $L_{50}=70$. When describing differences in the population dynamics, think about how our simulated fishery might be impacting these populations differently based on the defined life-history traits. I will mark your assignment based on thought process rather than being correct about why a specific change occurred. 
 
@@ -207,9 +266,17 @@ stock<-"YOURSTOCK"
 load("simulated_pop_dy.RData")
 ```
 
-## SSB and Abundance (2 points)
+## Age and growth (2 points)
 
-Please describe any differences that you see between your stocks SSB and abundance compared to my stocks SSB (0.5 pts) and abundance (0.5 points). If there are any differences, why do you think they may be occurring? (1 point)  
+Examine your length-at-age and weight-at-age plots. Which age classes contribute most to total biomass, and why (1 pt)? How does the maximum age of your stock influence total biomass accumulation and the stock’s resilience to fishing (1 pt)?
+
+## Maturity and Selectivity (2 points)
+
+Examine your maturity and fishery selectivity plots. Which age or size classes are most vulnerable to the fishery (1 pt)? Right now, the fishery only targets mature fish, how would decreasing the targeted length or age of harvested fish modify your SSB trend (1 pt)?
+
+## SSB and Age Structure (2 points)
+
+Compare your SSB and abundance-at-age plots to mine. How does the age structure and growth pattern of your stock influence its sensitivity to the fishery compared to mine (1 pt)? Which age classes act as a buffer against declines in SSB, and why (1 pt)?”
 
 ```{r biomass, fig.height=8}
 par(mfrow=c(2,1))
@@ -219,44 +286,8 @@ plot(sim_pop_dy$SSB~yrs, type="l", xlab="Year", ylab="Spawning Stock Biomass",
      las=1, lwd=2, main="Matts Stock")
 ```
 
-```{r abundance, fig.height=8}
-par(mfrow=c(2,1))
-plot(rowSums(N)~yrs, type="l", xlab="Year", ylab="Total Abundance", las=1,
-     lwd=2, main=stock)
-plot(rowSums(sim_pop_dy$N)~yrs, type="l", xlab="Year", ylab="Total Abundance",
-     las=1, lwd=2, main="Matts Stock")
-```
-
-## Recruitment (1 point)
-
-We can also look to see how recruitment has varied with stock size. Here, I used a Beverton-Holt recruitment function with some random variability added in.
-
-Please describe any differences that you see between your stock's recruitment and mine (0.5 points). If there are any differences, why do you think they may be occurring? (0.5 points)
-
-```{r sr, fig.height=8}
-sim_ssb<-seq(from=0, to=max(SSB), by=1)
-
-par(mfrow=c(2,1))
-plot(R~SSB, xlab="Spawning Stock Biomass", ylab="Recruitment (numbers)",
-     las=1, lwd=2, pch=19, xlim=c(0,max(SSB)+100),
-     ylim=c(0, max(R[2:nyears])+10), main=stock)
-lines(sim_ssb, ((10/mean(maa*waa))*sim_ssb)/(1+0.001*sim_ssb))
-
-sim_ssb<-seq(from=0, to=max(sim_pop_dy$SSB), by=1)
-plot(sim_pop_dy$R~sim_pop_dy$SSB, xlab="Spawning Stock Biomass",
-     ylab="Recruitment (numbers)", las=1, lwd=2, pch=19,
-     xlim=c(0,max(sim_pop_dy$SSB)+100),
-     ylim=c(0, max(sim_pop_dy$R[2:nyears])+100), main="Matts Stock")
-lines(sim_ssb,
-      (10/mean(sim_pop_dy$maa*sim_pop_dy$waa)*sim_ssb)/(1+0.001*sim_ssb))
-```
-
-## Abundance at age (2 points)
-
-Please describe any differences that you see between your stock's abundance at age and mine (1 point). If there are any differences, why do you think they may be occurring? (1 point)
 
 ```{r N_mat}
-library(ggplot2)
 N_df<-data.frame(N=c(N),year=rep(yrs, nages), age=(rep(seq(from=1, to=nages),
                                                        each=51)))
 
@@ -277,6 +308,70 @@ ggplot(data=N_df, aes(x=year, y=N))+xlab("Year")+ylab("Abundance at Age")+
 ```
 
 
+## Recruitment (2 points)
+
+Please describe any differences that you see between your stock-recruitment curve and mine (1 point). What implications do these differences have for the population dynamics of your stock relative to mine (1 point)?
+
+```{r sr, fig.height=8}
+sim_ssb<-seq(from=0, to=max(SSB), by=1)
+sim_rec<-bev_holt(sim_ssb, R0, SSB0, h) 
+
+par(mfrow=c(2,1))
+plot(R~SSB, xlab="Spawning Stock Biomass", ylab="Recruitment (numbers)",
+     las=1, lwd=2, pch=19, xlim=c(0,max(SSB)+100),
+     ylim=c(0, max(R[2:nyears])+10), main=stock)
+lines(sim_ssb, sim_rec)
+
+sim_ssb<-seq(from=0, to=max(sim_pop_dy$SSB), by=1)
+plot(sim_pop_dy$R~sim_pop_dy$SSB, xlab="Spawning Stock Biomass",
+     ylab="Recruitment (numbers)", las=1, lwd=2, pch=19,
+     xlim=c(0,max(sim_pop_dy$SSB)+100),
+     ylim=c(0, max(sim_pop_dy$R[2:nyears])+100), main="Matts Stock")
+lines(sim_ssb,
+      (10/mean(sim_pop_dy$maa*sim_pop_dy$waa)*sim_ssb)/(1+0.001*sim_ssb))
+```
+
+
 ## Sustainability (2 points)
 
-Although this simulation does not include reference point calculations, do you think that the simulated fishery is more or less sustainable for your stock than mine? Why?
+Below I create a Kobe plot (using B/Bmsy vs F/Fmsy) and a USR/LRP plot (using SSB/SSB0). What do these plots indicate about the sustainability of the fishery on your stock? 
+
+```{r kobe, fig.height=4}
+B_ratio <- SSB / Bmsy
+F_ratio <- rowMeans(F) / Fmsy
+
+xmax <- max(1.5, max(B_ratio))
+ymax <- max(1.5, max(F_ratio))
+
+plot(B_ratio, F_ratio, type="n", 
+     xlab="B / Bmsy", ylab="F / Fmsy",
+     main=paste("Kobe Plot:", stock),
+     xlim=c(0, xmax), ylim=c(0, ymax))
+
+rect(xleft=1, ybottom=0, xright=xmax, ytop=1, col=adjustcolor("green", alpha.f=0.2), border=NA)
+rect(xleft=0, ybottom=0, xright=1, ytop=1, col=adjustcolor("yellow", alpha.f=0.2), border=NA)
+rect(xleft=1, ybottom=1, xright=xmax, ytop=ymax, col=adjustcolor("orange", alpha.f=0.2), border=NA)
+rect(xleft=0, ybottom=1, xright=1, ytop=ymax, col=adjustcolor("red", alpha.f=0.2), border=NA)
+
+abline(v=1, h=1, lty=2)
+
+lines(B_ratio, F_ratio, type="b", pch=19, col="black")
+```
+
+```{r usr_lrp, fig.height=4}
+ssb_ratio <- SSB / SSB0
+
+plot(yrs, ssb_ratio, type="b", pch=19,
+     xlab="Year", ylab="SSB / SSB0",
+     main=paste("Stock Status:", stock),
+     ylim=c(0, max(1.2, ssb_ratio)))
+
+abline(h=USR/SSB0, col="blue", lty=2)  # USR
+abline(h=LRP/SSB0, col="red", lty=2)   # LRP
+
+legend("topright",
+       legend=c("USR", "LRP"),
+       col=c("black","red"),
+       lty=c(2,2),
+       pch=c(NA,NA))
+```
