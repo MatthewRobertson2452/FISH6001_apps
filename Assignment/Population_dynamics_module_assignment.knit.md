@@ -6,11 +6,7 @@ output: pdf_document
 fontsize: 12pt
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(knitr)
-library(ggplot2)
-```
+
 
 # Data Setup
 
@@ -18,7 +14,8 @@ In this assignment you are going to modify the age-structured simulation that we
 
 Similar to the example in class, the simulation will run for 50 years, lets say from 2000 to 2050.
 
-```{r time}
+
+``` r
 yrs<-seq(from=2000, to=2050)
 nyears<-length(yrs)
 ```
@@ -27,7 +24,8 @@ nyears<-length(yrs)
 
 What is the maximum age of your stock? Provide a citation.
 
-```{r nages}
+
+``` r
 #Change the value to match your stock's value
 nages<-15
 ```
@@ -36,12 +34,14 @@ nages<-15
 
 What is $L_{inf}$ for your stock? Provide a citation.
 
-```{r linf}
+
+``` r
 #Change the value to match your stock's value
 linf<-100
 ```
 
-```{r lplot}
+
+``` r
 laa<-rep(NA, nages)
 for(i in 1:nages){
 laa[i]<-linf*(1-exp(-(5/nages)*(i-(linf/1000))))
@@ -52,17 +52,20 @@ plot(laa~seq(from=1, to=nages, by=1), pch=19, xlab="Age",
 lines(laa~seq(from=1, to=nages, by=1))
 ```
 
+![](Population_dynamics_module_assignment_files/figure-latex/lplot-1.pdf)<!-- --> 
+
 ## Length-weight relationship (1 point)
 
 What is the allometric growth coefficient ($b$) for your stock? Provide a citation.
 
-```{r b}
+
+``` r
 #Change the value to match your stock's value
 b<-3
 ```
 
-```{r weight, fig.height=8}
 
+``` r
 waa<-rep(NA, nages)
 for(i in 1:nages){
   waa[i]<-(0.001*laa[i]^b)/100
@@ -77,16 +80,20 @@ plot(waa~seq(from=1, to=nages, by=1), pch=19, xlab="Age", ylab="Mean Weight",
 lines(waa~seq(from=1, to=nages, by=1))
 ```
 
+![](Population_dynamics_module_assignment_files/figure-latex/weight-1.pdf)<!-- --> 
+
 ## Maturity (1 point)
 
 What is the length at 50% maturity ($L_{50}$) for females of your stock? Provide a citation.
 
-```{r}
+
+``` r
 #Change the value to match your stock's value
 l50<-70
 ```
 
-```{r maturity}
+
+``` r
 maa<-rep(NA, nages)
 for(i in 1:nages){
   maa[i]<-1/(1+exp(-0.5*(laa[i]-l50)))
@@ -96,22 +103,16 @@ plot(maa~seq(from=1, to=nages, by=1), pch=19, xlab="Age",
 lines(maa~seq(from=1, to=nages, by=1))
 ```
 
+![](Population_dynamics_module_assignment_files/figure-latex/maturity-1.pdf)<!-- --> 
+
 Like was discussed in lecture, we are going to assume that natural mortality ($M$) is constant at 0.2. No need to change this for the assignment.
 
-```{r M}
+
+``` r
 M<-matrix(0.2, nyears,nages)
 ```
 
-```{r emptystuff, echo=FALSE}
-N<-matrix(NA, nyears,nages)
-log_N<-matrix(NA, nyears,nages)
-B<-matrix(NA, nyears,nages)
-F<-matrix(NA, nyears,nages)
-Z<-matrix(NA, nyears,nages)
-R<-rep(NA, nyears)
-log_R<-rep(NA, nyears)
-SSB<-rep(NA, nyears)
-```
+
 
 Once all of these components for the population have been set-up, we can start to think about the fishery.
 
@@ -123,7 +124,8 @@ In this case, fishing mortality will start at 0 in 2000 and steadily increase to
 
 None of the code in this section needs to be modified.
 
-```{r sel, fig.height=8}
+
+``` r
 Fsel<-ifelse(maa<0.5, 0,1)
 par(mfrow=c(2,1))
 plot(Fsel~maa,pch=19, xlab="Probability of Maturity At Age",
@@ -134,7 +136,10 @@ plot(Fsel~laa,pch=19, xlab="Length At Age", ylab="Fishery Selectivity",
 lines(Fsel~laa)
 ```
 
-```{r fhistory}
+![](Population_dynamics_module_assignment_files/figure-latex/sel-1.pdf)<!-- --> 
+
+
+``` r
 Ftrend<-rep(NA, nyears)
 incF<-round(nyears*0.25,0)
 Ftrend[1:incF]<-seq(from=0, to=0.3, length=incF)
@@ -144,110 +149,15 @@ plot(Ftrend~yrs,pch=19, xlab="Year", ylab="Fishing Mortality", las=1)
 lines(Ftrend~yrs)
 ```
 
+![](Population_dynamics_module_assignment_files/figure-latex/fhistory-1.pdf)<!-- --> 
+
 # Simulation
 
 Now that the species biology and fishery have been defined, we can run a theoretical simulation of how this fishery would impact a theoretical population with your stock's biology.
 
 None of the code in this section needs to be modified.
 
-```{r, echo=FALSE}
-set.seed(333)
 
-#juv_N<-2500/mean(waa*maa)
-#starting_N<-juv_N*exp(-0.1*seq(from=0, to=nages-1))
-
-R0 <- 1000
-N[1,1] <- R0
-for(a in 2:nages){
-  N[1,a] <- N[1,a-1] * exp(-0.2)
-}
-
-alpha<-10000
-beta<-0.005
-
-log_N[1,]<-log(N[1,])
-B[1,]<-N[1,]*waa
-SSB[1]<-sum(B[1,]*0.5*maa)
-
-
-for(i in 1:nyears){
-  F[i,] <- Ftrend[i]*Fsel
-}
-
-for(y in 1:nyears){
-  for(a in 1:nages){
-    if(Fsel[a]>0){
-      F[y,a]<-abs(F[y,a]+rnorm(1,0,0.05))
-    } 
-  }
-}
-
-SSB0 <- sum(N[1,] * waa * maa * 0.5)
-h <- 0.75
-
-bev_holt <- function(SSB, R0, SSB0, h) {
-  (4 * h * R0 * SSB) /
-    (SSB0 * (1 - h) + SSB * (5 * h - 1))
-}
-
-sigma_R <- 0.7
-
-for(y in 2:nyears){
-  R[y] <- bev_holt(SSB[y-1], R0, SSB0, h) *
-    exp(rnorm(1, -0.5 * sigma_R^2, sigma_R))
-  N[y,1]<-R[y]
-  B[y,1]<-N[y,1] * waa[1]
-  
-  for(a in 2:nages){
-    N[y,a]<-N[y-1,a-1]*exp(-(M[y-1,a-1]+F[y-1,a-1]))
-  }
-  N[y,nages] <- N[y-1,nages-1] * exp(-(M[y-1,nages-1] + F[y-1,nages-1])) +
-    N[y-1,nages]   * exp(-(M[y-1,nages]   + F[y-1,nages]))
-  
-  for(a in 2:nages){
-  B[y,a]<-N[y,a] * waa[a]
-  }
-  
-  SSB[y]<-sum(B[y,]*maa*0.5)
-}
-
-
-SSB0 <- sum(N[1,] * waa * maa * 0.5)
-
-USR <- 0.5 * SSB0
-LRP <- 0.2 * SSB0
-
-
-equilibrium_yield <- function(F, M, sel, waa, maa, nages, h, R0) {
-  N_eq <- rep(NA, nages)
-  N_eq[1] <- R0
-  
-  Z <- M + F * sel
-  for(a in 2:nages) {
-    N_eq[a] <- N_eq[a-1] * exp(-Z[a-1])
-  }
-  # plus group
-  N_eq[nages] <- N_eq[nages] + N_eq[nages] * exp(-Z[nages])
-  
-  SSB_eq <- sum(N_eq * waa * maa * 0.5)
-  
-  R_eq <- (4*h*R0*SSB_eq) / (SSB0*(1-h) + SSB_eq*(5*h-1))
-  
-  N_eq <- N_eq * (R_eq / R0)
-  
-  C_eq <- sum(N_eq * (F*sel) / Z * (1 - exp(-Z)) * waa)
-  
-  return(list(SSB=SSB_eq, R=R_eq, Y=C_eq))
-}
-
-Fvals <- seq(0, 1, by=0.005)
-yield_vals <- sapply(Fvals, function(F) equilibrium_yield(F, M[1,], Fsel, waa, maa, nages, h, R0)$Y)
-
-Fmsy <- Fvals[which.max(yield_vals)]
-Bmsy <- equilibrium_yield(Fmsy, M[1,], Fsel, waa, maa, nages, h, R0)$SSB
-
-
-```
 
 # Population dynamics comparison
 
@@ -257,14 +167,13 @@ The life-history traits for "Matts stock" are the same as what we examined for t
 
 To make sure you can identify which figure is for your stock please modify the following code to include your stock name:
 
-```{r name}
+
+``` r
 # modify the following code with your stocks name
 stock<-"YOURSTOCK"
 ```
 
-```{r loadsim, echo=FALSE}
-load("simulated_pop_dy.RData")
-```
+
 
 ## Age and growth (2 points)
 
@@ -278,7 +187,8 @@ Examine your maturity and fishery selectivity plots. Which age or size classes a
 
 Compare your SSB and abundance-at-age plots to mine. How does the age structure and growth pattern of your stock influence its sensitivity to the fishery compared to mine (1 pt)? Which age classes act as a buffer against declines in SSB, and why (1 pt)?”
 
-```{r biomass, fig.height=8}
+
+``` r
 par(mfrow=c(2,1))
 plot(SSB~yrs, type="l", xlab="Year", ylab="Spawning Stock Biomass", 
      las=1, lwd=2, main=stock)
@@ -286,8 +196,11 @@ plot(sim_pop_dy$SSB~yrs, type="l", xlab="Year", ylab="Spawning Stock Biomass",
      las=1, lwd=2, main="Matts Stock")
 ```
 
+![](Population_dynamics_module_assignment_files/figure-latex/biomass-1.pdf)<!-- --> 
 
-```{r N_mat}
+
+
+``` r
 N_df<-data.frame(N=c(N),year=rep(yrs, nages), age=(rep(seq(from=1, to=nages),
                                                        each=51)))
 
@@ -297,7 +210,10 @@ ggplot(data=N_df, aes(x=year, y=N))+xlab("Year")+ylab("Abundance at Age")+
   theme(axis.text.x = element_text(angle = 45, hjust=1))
 ```
 
-```{r N_mystock}
+![](Population_dynamics_module_assignment_files/figure-latex/N_mat-1.pdf)<!-- --> 
+
+
+``` r
 N_df<-data.frame(N=c(sim_pop_dy$N),year=rep(yrs, sim_pop_dy$nages),
                  age=(rep(seq(from=1, to=sim_pop_dy$nages), each=51)))
 
@@ -307,12 +223,15 @@ ggplot(data=N_df, aes(x=year, y=N))+xlab("Year")+ylab("Abundance at Age")+
   theme(axis.text.x = element_text(angle = 45, hjust=1))
 ```
 
+![](Population_dynamics_module_assignment_files/figure-latex/N_mystock-1.pdf)<!-- --> 
+
 
 ## Recruitment (2 points)
 
 Please describe any differences that you see between your stock-recruitment curve and mine (1 point). What implications do these differences have for the population dynamics of your stock relative to mine (1 point)?
 
-```{r sr, fig.height=8}
+
+``` r
 sim_ssb<-seq(from=0, to=max(SSB), by=1)
 sim_rec<-bev_holt(sim_ssb, R0, SSB0, h) 
 
@@ -331,12 +250,15 @@ lines(sim_ssb,
       (10/mean(sim_pop_dy$maa*sim_pop_dy$waa)*sim_ssb)/(1+0.001*sim_ssb))
 ```
 
+![](Population_dynamics_module_assignment_files/figure-latex/sr-1.pdf)<!-- --> 
+
 
 ## Sustainability (3 points)
 
 Below I create a Kobe plot (using B/Bmsy vs F/Fmsy) and a USR/LRP plot (using SSB/SSB0). What do these plots indicate about the sustainability of the fishery on your stock? 
 
-```{r kobe, fig.height=4}
+
+``` r
 B_ratio <- SSB / Bmsy
 F_ratio <- rowMeans(F) / Fmsy
 
@@ -358,7 +280,10 @@ abline(v=1, h=1, lty=2)
 lines(B_ratio, F_ratio, type="b", pch=19, col="black")
 ```
 
-```{r usr_lrp, fig.height=4}
+![](Population_dynamics_module_assignment_files/figure-latex/kobe-1.pdf)<!-- --> 
+
+
+``` r
 ssb_ratio <- SSB / SSB0
 
 plot(yrs, ssb_ratio, type="b", pch=19,
@@ -375,3 +300,5 @@ legend("topright",
        lty=c(2,2),
        pch=c(NA,NA))
 ```
+
+![](Population_dynamics_module_assignment_files/figure-latex/usr_lrp-1.pdf)<!-- --> 

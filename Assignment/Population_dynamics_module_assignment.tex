@@ -1,0 +1,475 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  12pt,
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Population dynamics module assignment},
+  pdfauthor={YOUR NAME HERE},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Population dynamics module assignment}
+\author{YOUR NAME HERE}
+\date{SUBMISSION DATE HERE}
+
+\begin{document}
+\maketitle
+
+\section{Data Setup}\label{data-setup}
+
+In this assignment you are going to modify the age-structured simulation
+that we used earlier in the course to match the basic biology of your
+stock. There should be a CSAS report or other stock assessment document
+that contains much of this information, if it exists for your stock. If
+it doesn't exist in a government report, I would like you to find a
+different citation for the biological information for your stock. If
+there is no research on your particular stock for the specified life
+history information, then you can use Fishbase or some other source that
+describes that information for your species. Finally, if there is no
+research on your species for a life history trait, you can give it your
+best guess, but you will need to indicate this and I will search to see
+if there is truly no research on your species for that trait.
+
+Similar to the example in class, the simulation will run for 50 years,
+lets say from 2000 to 2050.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{yrs}\OtherTok{\textless{}{-}}\FunctionTok{seq}\NormalTok{(}\AttributeTok{from=}\DecValTok{2000}\NormalTok{, }\AttributeTok{to=}\DecValTok{2050}\NormalTok{)}
+\NormalTok{nyears}\OtherTok{\textless{}{-}}\FunctionTok{length}\NormalTok{(yrs)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Number of ages (1 point)}\label{number-of-ages-1-point}
+
+What is the maximum age of your stock? Provide a citation.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Change the value to match your stock\textquotesingle{}s value}
+\NormalTok{nages}\OtherTok{\textless{}{-}}\DecValTok{15}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Maximum length (1 points)}\label{maximum-length-1-points}
+
+What is \(L_{inf}\) for your stock? Provide a citation.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Change the value to match your stock\textquotesingle{}s value}
+\NormalTok{linf}\OtherTok{\textless{}{-}}\DecValTok{100}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{laa}\OtherTok{\textless{}{-}}\FunctionTok{rep}\NormalTok{(}\ConstantTok{NA}\NormalTok{, nages)}
+\ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{nages)\{}
+\NormalTok{laa[i]}\OtherTok{\textless{}{-}}\NormalTok{linf}\SpecialCharTok{*}\NormalTok{(}\DecValTok{1}\SpecialCharTok{{-}}\FunctionTok{exp}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{(}\DecValTok{5}\SpecialCharTok{/}\NormalTok{nages)}\SpecialCharTok{*}\NormalTok{(i}\SpecialCharTok{{-}}\NormalTok{(linf}\SpecialCharTok{/}\DecValTok{1000}\NormalTok{))))}
+\NormalTok{\}}
+
+\FunctionTok{plot}\NormalTok{(laa}\SpecialCharTok{\textasciitilde{}}\FunctionTok{seq}\NormalTok{(}\AttributeTok{from=}\DecValTok{1}\NormalTok{, }\AttributeTok{to=}\NormalTok{nages, }\AttributeTok{by=}\DecValTok{1}\NormalTok{), }\AttributeTok{pch=}\DecValTok{19}\NormalTok{, }\AttributeTok{xlab=}\StringTok{"Age"}\NormalTok{,}
+     \AttributeTok{ylab=}\StringTok{"Mean Length (cm)"}\NormalTok{, }\AttributeTok{las=}\DecValTok{1}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(laa}\SpecialCharTok{\textasciitilde{}}\FunctionTok{seq}\NormalTok{(}\AttributeTok{from=}\DecValTok{1}\NormalTok{, }\AttributeTok{to=}\NormalTok{nages, }\AttributeTok{by=}\DecValTok{1}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Population_dynamics_module_assignment_files/figure-latex/lplot-1.pdf}}
+
+\subsection{Length-weight relationship (1
+point)}\label{length-weight-relationship-1-point}
+
+What is the allometric growth coefficient (\(b\)) for your stock?
+Provide a citation.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Change the value to match your stock\textquotesingle{}s value}
+\NormalTok{b}\OtherTok{\textless{}{-}}\DecValTok{3}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{waa}\OtherTok{\textless{}{-}}\FunctionTok{rep}\NormalTok{(}\ConstantTok{NA}\NormalTok{, nages)}
+\ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{nages)\{}
+\NormalTok{  waa[i]}\OtherTok{\textless{}{-}}\NormalTok{(}\FloatTok{0.001}\SpecialCharTok{*}\NormalTok{laa[i]}\SpecialCharTok{\^{}}\NormalTok{b)}\SpecialCharTok{/}\DecValTok{100}
+\NormalTok{  \}}
+
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(waa}\SpecialCharTok{\textasciitilde{}}\NormalTok{laa, }\AttributeTok{pch=}\DecValTok{19}\NormalTok{, }\AttributeTok{xlab=}\StringTok{"Mean Length (cm)"}\NormalTok{, }\AttributeTok{ylab=}\StringTok{"Mean Weight (kg)"}\NormalTok{,}
+     \AttributeTok{las=}\DecValTok{1}\NormalTok{, }\AttributeTok{xlim=}\FunctionTok{c}\NormalTok{(}\FunctionTok{min}\NormalTok{(laa)}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{,}\FunctionTok{max}\NormalTok{(laa)}\SpecialCharTok{+}\DecValTok{1}\NormalTok{), }\AttributeTok{ylim=}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FunctionTok{max}\NormalTok{(waa)))}
+\FunctionTok{lines}\NormalTok{(waa}\SpecialCharTok{\textasciitilde{}}\NormalTok{laa)}
+\FunctionTok{plot}\NormalTok{(waa}\SpecialCharTok{\textasciitilde{}}\FunctionTok{seq}\NormalTok{(}\AttributeTok{from=}\DecValTok{1}\NormalTok{, }\AttributeTok{to=}\NormalTok{nages, }\AttributeTok{by=}\DecValTok{1}\NormalTok{), }\AttributeTok{pch=}\DecValTok{19}\NormalTok{, }\AttributeTok{xlab=}\StringTok{"Age"}\NormalTok{, }\AttributeTok{ylab=}\StringTok{"Mean Weight"}\NormalTok{,}
+     \AttributeTok{las=}\DecValTok{1}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(waa}\SpecialCharTok{\textasciitilde{}}\FunctionTok{seq}\NormalTok{(}\AttributeTok{from=}\DecValTok{1}\NormalTok{, }\AttributeTok{to=}\NormalTok{nages, }\AttributeTok{by=}\DecValTok{1}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Population_dynamics_module_assignment_files/figure-latex/weight-1.pdf}}
+
+\subsection{Maturity (1 point)}\label{maturity-1-point}
+
+What is the length at 50\% maturity (\(L_{50}\)) for females of your
+stock? Provide a citation.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Change the value to match your stock\textquotesingle{}s value}
+\NormalTok{l50}\OtherTok{\textless{}{-}}\DecValTok{70}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{maa}\OtherTok{\textless{}{-}}\FunctionTok{rep}\NormalTok{(}\ConstantTok{NA}\NormalTok{, nages)}
+\ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{nages)\{}
+\NormalTok{  maa[i]}\OtherTok{\textless{}{-}}\DecValTok{1}\SpecialCharTok{/}\NormalTok{(}\DecValTok{1}\SpecialCharTok{+}\FunctionTok{exp}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{0.5}\SpecialCharTok{*}\NormalTok{(laa[i]}\SpecialCharTok{{-}}\NormalTok{l50)))}
+\NormalTok{\}}
+\FunctionTok{plot}\NormalTok{(maa}\SpecialCharTok{\textasciitilde{}}\FunctionTok{seq}\NormalTok{(}\AttributeTok{from=}\DecValTok{1}\NormalTok{, }\AttributeTok{to=}\NormalTok{nages, }\AttributeTok{by=}\DecValTok{1}\NormalTok{), }\AttributeTok{pch=}\DecValTok{19}\NormalTok{, }\AttributeTok{xlab=}\StringTok{"Age"}\NormalTok{,}
+     \AttributeTok{ylab=}\StringTok{"Probability of maturity"}\NormalTok{, }\AttributeTok{las=}\DecValTok{1}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(maa}\SpecialCharTok{\textasciitilde{}}\FunctionTok{seq}\NormalTok{(}\AttributeTok{from=}\DecValTok{1}\NormalTok{, }\AttributeTok{to=}\NormalTok{nages, }\AttributeTok{by=}\DecValTok{1}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Population_dynamics_module_assignment_files/figure-latex/maturity-1.pdf}}
+
+Like was discussed in lecture, we are going to assume that natural
+mortality (\(M\)) is constant at 0.2. No need to change this for the
+assignment.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{M}\OtherTok{\textless{}{-}}\FunctionTok{matrix}\NormalTok{(}\FloatTok{0.2}\NormalTok{, nyears,nages)}
+\end{Highlighting}
+\end{Shaded}
+
+Once all of these components for the population have been set-up, we can
+start to think about the fishery.
+
+\section{The fishery}\label{the-fishery}
+
+For the purposes of this simulation, I am going to assume that the
+fishery only targets mature fish and also has followed a specific
+pattern of exploitation over time.
+
+In this case, fishing mortality will start at 0 in 2000 and steadily
+increase to a maximum value of 0.3 at which point it will level off and
+the fishery will maintain at a steady amount of fishing pressure until
+the end of the simulation.
+
+None of the code in this section needs to be modified.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Fsel}\OtherTok{\textless{}{-}}\FunctionTok{ifelse}\NormalTok{(maa}\SpecialCharTok{\textless{}}\FloatTok{0.5}\NormalTok{, }\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{)}
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(Fsel}\SpecialCharTok{\textasciitilde{}}\NormalTok{maa,}\AttributeTok{pch=}\DecValTok{19}\NormalTok{, }\AttributeTok{xlab=}\StringTok{"Probability of Maturity At Age"}\NormalTok{,}
+     \AttributeTok{ylab=}\StringTok{"Fishery Selectivity"}\NormalTok{, }\AttributeTok{las=}\DecValTok{1}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(Fsel}\SpecialCharTok{\textasciitilde{}}\NormalTok{maa)}
+\FunctionTok{plot}\NormalTok{(Fsel}\SpecialCharTok{\textasciitilde{}}\NormalTok{laa,}\AttributeTok{pch=}\DecValTok{19}\NormalTok{, }\AttributeTok{xlab=}\StringTok{"Length At Age"}\NormalTok{, }\AttributeTok{ylab=}\StringTok{"Fishery Selectivity"}\NormalTok{, }
+     \AttributeTok{las=}\DecValTok{1}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(Fsel}\SpecialCharTok{\textasciitilde{}}\NormalTok{laa)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Population_dynamics_module_assignment_files/figure-latex/sel-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Ftrend}\OtherTok{\textless{}{-}}\FunctionTok{rep}\NormalTok{(}\ConstantTok{NA}\NormalTok{, nyears)}
+\NormalTok{incF}\OtherTok{\textless{}{-}}\FunctionTok{round}\NormalTok{(nyears}\SpecialCharTok{*}\FloatTok{0.25}\NormalTok{,}\DecValTok{0}\NormalTok{)}
+\NormalTok{Ftrend[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{incF]}\OtherTok{\textless{}{-}}\FunctionTok{seq}\NormalTok{(}\AttributeTok{from=}\DecValTok{0}\NormalTok{, }\AttributeTok{to=}\FloatTok{0.3}\NormalTok{, }\AttributeTok{length=}\NormalTok{incF)}
+\NormalTok{Ftrend[(incF}\SpecialCharTok{+}\DecValTok{1}\NormalTok{)}\SpecialCharTok{:}\NormalTok{nyears]}\OtherTok{\textless{}{-}}\FloatTok{0.3}
+
+\FunctionTok{plot}\NormalTok{(Ftrend}\SpecialCharTok{\textasciitilde{}}\NormalTok{yrs,}\AttributeTok{pch=}\DecValTok{19}\NormalTok{, }\AttributeTok{xlab=}\StringTok{"Year"}\NormalTok{, }\AttributeTok{ylab=}\StringTok{"Fishing Mortality"}\NormalTok{, }\AttributeTok{las=}\DecValTok{1}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(Ftrend}\SpecialCharTok{\textasciitilde{}}\NormalTok{yrs)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Population_dynamics_module_assignment_files/figure-latex/fhistory-1.pdf}}
+
+\section{Simulation}\label{simulation}
+
+Now that the species biology and fishery have been defined, we can run a
+theoretical simulation of how this fishery would impact a theoretical
+population with your stock's biology.
+
+None of the code in this section needs to be modified.
+
+\section{Population dynamics
+comparison}\label{population-dynamics-comparison}
+
+After the simulation runs, we can examine how the population actually
+changed over time. In the following sections I will ask you questions,
+including to compare your stock to mine. Any comparisons should focus on
+large changes rather than interannual variability. Much of the noise
+will be driven by the simulation and will not be meaningful, but you
+should be able to identify large changes that are driven by differences
+in life-history traits.
+
+The life-history traits for ``Matts stock'' are the same as what we
+examined for the age-structured model in class. So, \(nages=15\),
+\(L_{inf}=100\), \(b=3\), and \(L_{50}=70\). When describing differences
+in the population dynamics, think about how our simulated fishery might
+be impacting these populations differently based on the defined
+life-history traits. I will mark your assignment based on thought
+process rather than being correct about why a specific change occurred.
+
+To make sure you can identify which figure is for your stock please
+modify the following code to include your stock name:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# modify the following code with your stocks name}
+\NormalTok{stock}\OtherTok{\textless{}{-}}\StringTok{"YOURSTOCK"}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Age and growth (2 points)}\label{age-and-growth-2-points}
+
+Examine your length-at-age and weight-at-age plots. Which age classes
+contribute most to total biomass, and why (1 pt)? How does the maximum
+age of your stock influence total biomass accumulation and the stock's
+resilience to fishing (1 pt)?
+
+\subsection{Maturity and Selectivity (2
+points)}\label{maturity-and-selectivity-2-points}
+
+Examine your maturity and fishery selectivity plots. Which age or size
+classes are most vulnerable to the fishery (1 pt)? Right now, the
+fishery only targets mature fish, how would decreasing the targeted
+length or age of harvested fish modify your SSB trend (1 pt)?
+
+\subsection{SSB and Age Structure (2
+points)}\label{ssb-and-age-structure-2-points}
+
+Compare your SSB and abundance-at-age plots to mine. How does the age
+structure and growth pattern of your stock influence its sensitivity to
+the fishery compared to mine (1 pt)? Which age classes act as a buffer
+against declines in SSB, and why (1 pt)?''
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(SSB}\SpecialCharTok{\textasciitilde{}}\NormalTok{yrs, }\AttributeTok{type=}\StringTok{"l"}\NormalTok{, }\AttributeTok{xlab=}\StringTok{"Year"}\NormalTok{, }\AttributeTok{ylab=}\StringTok{"Spawning Stock Biomass"}\NormalTok{, }
+     \AttributeTok{las=}\DecValTok{1}\NormalTok{, }\AttributeTok{lwd=}\DecValTok{2}\NormalTok{, }\AttributeTok{main=}\NormalTok{stock)}
+\FunctionTok{plot}\NormalTok{(sim\_pop\_dy}\SpecialCharTok{$}\NormalTok{SSB}\SpecialCharTok{\textasciitilde{}}\NormalTok{yrs, }\AttributeTok{type=}\StringTok{"l"}\NormalTok{, }\AttributeTok{xlab=}\StringTok{"Year"}\NormalTok{, }\AttributeTok{ylab=}\StringTok{"Spawning Stock Biomass"}\NormalTok{,}
+     \AttributeTok{las=}\DecValTok{1}\NormalTok{, }\AttributeTok{lwd=}\DecValTok{2}\NormalTok{, }\AttributeTok{main=}\StringTok{"Matts Stock"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Population_dynamics_module_assignment_files/figure-latex/biomass-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{N\_df}\OtherTok{\textless{}{-}}\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{N=}\FunctionTok{c}\NormalTok{(N),}\AttributeTok{year=}\FunctionTok{rep}\NormalTok{(yrs, nages), }\AttributeTok{age=}\NormalTok{(}\FunctionTok{rep}\NormalTok{(}\FunctionTok{seq}\NormalTok{(}\AttributeTok{from=}\DecValTok{1}\NormalTok{, }\AttributeTok{to=}\NormalTok{nages),}
+                                                       \AttributeTok{each=}\DecValTok{51}\NormalTok{)))}
+
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data=}\NormalTok{N\_df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{year, }\AttributeTok{y=}\NormalTok{N))}\SpecialCharTok{+}\FunctionTok{xlab}\NormalTok{(}\StringTok{"Year"}\NormalTok{)}\SpecialCharTok{+}\FunctionTok{ylab}\NormalTok{(}\StringTok{"Abundance at Age"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{()}\SpecialCharTok{+}\FunctionTok{ggtitle}\NormalTok{(stock)}\SpecialCharTok{+}
+  \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{age, }\AttributeTok{scales =} \StringTok{"free\_y"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{axis.text.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{angle =} \DecValTok{45}\NormalTok{, }\AttributeTok{hjust=}\DecValTok{1}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Population_dynamics_module_assignment_files/figure-latex/N_mat-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{N\_df}\OtherTok{\textless{}{-}}\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{N=}\FunctionTok{c}\NormalTok{(sim\_pop\_dy}\SpecialCharTok{$}\NormalTok{N),}\AttributeTok{year=}\FunctionTok{rep}\NormalTok{(yrs, sim\_pop\_dy}\SpecialCharTok{$}\NormalTok{nages),}
+                 \AttributeTok{age=}\NormalTok{(}\FunctionTok{rep}\NormalTok{(}\FunctionTok{seq}\NormalTok{(}\AttributeTok{from=}\DecValTok{1}\NormalTok{, }\AttributeTok{to=}\NormalTok{sim\_pop\_dy}\SpecialCharTok{$}\NormalTok{nages), }\AttributeTok{each=}\DecValTok{51}\NormalTok{)))}
+
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data=}\NormalTok{N\_df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{year, }\AttributeTok{y=}\NormalTok{N))}\SpecialCharTok{+}\FunctionTok{xlab}\NormalTok{(}\StringTok{"Year"}\NormalTok{)}\SpecialCharTok{+}\FunctionTok{ylab}\NormalTok{(}\StringTok{"Abundance at Age"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{()}\SpecialCharTok{+}\FunctionTok{ggtitle}\NormalTok{(}\StringTok{"Matts Stock"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{age, }\AttributeTok{scales =} \StringTok{"free\_y"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{axis.text.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{angle =} \DecValTok{45}\NormalTok{, }\AttributeTok{hjust=}\DecValTok{1}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Population_dynamics_module_assignment_files/figure-latex/N_mystock-1.pdf}}
+
+\subsection{Recruitment (2 points)}\label{recruitment-2-points}
+
+Please describe any differences that you see between your
+stock-recruitment curve and mine (1 point). What implications do these
+differences have for the population dynamics of your stock relative to
+mine (1 point)?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sim\_ssb}\OtherTok{\textless{}{-}}\FunctionTok{seq}\NormalTok{(}\AttributeTok{from=}\DecValTok{0}\NormalTok{, }\AttributeTok{to=}\FunctionTok{max}\NormalTok{(SSB), }\AttributeTok{by=}\DecValTok{1}\NormalTok{)}
+\NormalTok{sim\_rec}\OtherTok{\textless{}{-}}\FunctionTok{bev\_holt}\NormalTok{(sim\_ssb, R0, SSB0, h) }
+
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(R}\SpecialCharTok{\textasciitilde{}}\NormalTok{SSB, }\AttributeTok{xlab=}\StringTok{"Spawning Stock Biomass"}\NormalTok{, }\AttributeTok{ylab=}\StringTok{"Recruitment (numbers)"}\NormalTok{,}
+     \AttributeTok{las=}\DecValTok{1}\NormalTok{, }\AttributeTok{lwd=}\DecValTok{2}\NormalTok{, }\AttributeTok{pch=}\DecValTok{19}\NormalTok{, }\AttributeTok{xlim=}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FunctionTok{max}\NormalTok{(SSB)}\SpecialCharTok{+}\DecValTok{100}\NormalTok{),}
+     \AttributeTok{ylim=}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{max}\NormalTok{(R[}\DecValTok{2}\SpecialCharTok{:}\NormalTok{nyears])}\SpecialCharTok{+}\DecValTok{10}\NormalTok{), }\AttributeTok{main=}\NormalTok{stock)}
+\FunctionTok{lines}\NormalTok{(sim\_ssb, sim\_rec)}
+
+\NormalTok{sim\_ssb}\OtherTok{\textless{}{-}}\FunctionTok{seq}\NormalTok{(}\AttributeTok{from=}\DecValTok{0}\NormalTok{, }\AttributeTok{to=}\FunctionTok{max}\NormalTok{(sim\_pop\_dy}\SpecialCharTok{$}\NormalTok{SSB), }\AttributeTok{by=}\DecValTok{1}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(sim\_pop\_dy}\SpecialCharTok{$}\NormalTok{R}\SpecialCharTok{\textasciitilde{}}\NormalTok{sim\_pop\_dy}\SpecialCharTok{$}\NormalTok{SSB, }\AttributeTok{xlab=}\StringTok{"Spawning Stock Biomass"}\NormalTok{,}
+     \AttributeTok{ylab=}\StringTok{"Recruitment (numbers)"}\NormalTok{, }\AttributeTok{las=}\DecValTok{1}\NormalTok{, }\AttributeTok{lwd=}\DecValTok{2}\NormalTok{, }\AttributeTok{pch=}\DecValTok{19}\NormalTok{,}
+     \AttributeTok{xlim=}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FunctionTok{max}\NormalTok{(sim\_pop\_dy}\SpecialCharTok{$}\NormalTok{SSB)}\SpecialCharTok{+}\DecValTok{100}\NormalTok{),}
+     \AttributeTok{ylim=}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{max}\NormalTok{(sim\_pop\_dy}\SpecialCharTok{$}\NormalTok{R[}\DecValTok{2}\SpecialCharTok{:}\NormalTok{nyears])}\SpecialCharTok{+}\DecValTok{100}\NormalTok{), }\AttributeTok{main=}\StringTok{"Matts Stock"}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(sim\_ssb,}
+\NormalTok{      (}\DecValTok{10}\SpecialCharTok{/}\FunctionTok{mean}\NormalTok{(sim\_pop\_dy}\SpecialCharTok{$}\NormalTok{maa}\SpecialCharTok{*}\NormalTok{sim\_pop\_dy}\SpecialCharTok{$}\NormalTok{waa)}\SpecialCharTok{*}\NormalTok{sim\_ssb)}\SpecialCharTok{/}\NormalTok{(}\DecValTok{1}\FloatTok{+0.001}\SpecialCharTok{*}\NormalTok{sim\_ssb))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Population_dynamics_module_assignment_files/figure-latex/sr-1.pdf}}
+
+\subsection{Sustainability (3 points)}\label{sustainability-3-points}
+
+Below I create a Kobe plot (using B/Bmsy vs F/Fmsy) and a USR/LRP plot
+(using SSB/SSB0). What do these plots indicate about the sustainability
+of the fishery on your stock?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{B\_ratio }\OtherTok{\textless{}{-}}\NormalTok{ SSB }\SpecialCharTok{/}\NormalTok{ Bmsy}
+\NormalTok{F\_ratio }\OtherTok{\textless{}{-}} \FunctionTok{rowMeans}\NormalTok{(F) }\SpecialCharTok{/}\NormalTok{ Fmsy}
+
+\NormalTok{xmax }\OtherTok{\textless{}{-}} \FunctionTok{max}\NormalTok{(}\FloatTok{1.5}\NormalTok{, }\FunctionTok{max}\NormalTok{(B\_ratio))}
+\NormalTok{ymax }\OtherTok{\textless{}{-}} \FunctionTok{max}\NormalTok{(}\FloatTok{1.5}\NormalTok{, }\FunctionTok{max}\NormalTok{(F\_ratio))}
+
+\FunctionTok{plot}\NormalTok{(B\_ratio, F\_ratio, }\AttributeTok{type=}\StringTok{"n"}\NormalTok{, }
+     \AttributeTok{xlab=}\StringTok{"B / Bmsy"}\NormalTok{, }\AttributeTok{ylab=}\StringTok{"F / Fmsy"}\NormalTok{,}
+     \AttributeTok{main=}\FunctionTok{paste}\NormalTok{(}\StringTok{"Kobe Plot:"}\NormalTok{, stock),}
+     \AttributeTok{xlim=}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, xmax), }\AttributeTok{ylim=}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, ymax))}
+
+\FunctionTok{rect}\NormalTok{(}\AttributeTok{xleft=}\DecValTok{1}\NormalTok{, }\AttributeTok{ybottom=}\DecValTok{0}\NormalTok{, }\AttributeTok{xright=}\NormalTok{xmax, }\AttributeTok{ytop=}\DecValTok{1}\NormalTok{, }\AttributeTok{col=}\FunctionTok{adjustcolor}\NormalTok{(}\StringTok{"green"}\NormalTok{, }\AttributeTok{alpha.f=}\FloatTok{0.2}\NormalTok{), }\AttributeTok{border=}\ConstantTok{NA}\NormalTok{)}
+\FunctionTok{rect}\NormalTok{(}\AttributeTok{xleft=}\DecValTok{0}\NormalTok{, }\AttributeTok{ybottom=}\DecValTok{0}\NormalTok{, }\AttributeTok{xright=}\DecValTok{1}\NormalTok{, }\AttributeTok{ytop=}\DecValTok{1}\NormalTok{, }\AttributeTok{col=}\FunctionTok{adjustcolor}\NormalTok{(}\StringTok{"yellow"}\NormalTok{, }\AttributeTok{alpha.f=}\FloatTok{0.2}\NormalTok{), }\AttributeTok{border=}\ConstantTok{NA}\NormalTok{)}
+\FunctionTok{rect}\NormalTok{(}\AttributeTok{xleft=}\DecValTok{1}\NormalTok{, }\AttributeTok{ybottom=}\DecValTok{1}\NormalTok{, }\AttributeTok{xright=}\NormalTok{xmax, }\AttributeTok{ytop=}\NormalTok{ymax, }\AttributeTok{col=}\FunctionTok{adjustcolor}\NormalTok{(}\StringTok{"orange"}\NormalTok{, }\AttributeTok{alpha.f=}\FloatTok{0.2}\NormalTok{), }\AttributeTok{border=}\ConstantTok{NA}\NormalTok{)}
+\FunctionTok{rect}\NormalTok{(}\AttributeTok{xleft=}\DecValTok{0}\NormalTok{, }\AttributeTok{ybottom=}\DecValTok{1}\NormalTok{, }\AttributeTok{xright=}\DecValTok{1}\NormalTok{, }\AttributeTok{ytop=}\NormalTok{ymax, }\AttributeTok{col=}\FunctionTok{adjustcolor}\NormalTok{(}\StringTok{"red"}\NormalTok{, }\AttributeTok{alpha.f=}\FloatTok{0.2}\NormalTok{), }\AttributeTok{border=}\ConstantTok{NA}\NormalTok{)}
+
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{v=}\DecValTok{1}\NormalTok{, }\AttributeTok{h=}\DecValTok{1}\NormalTok{, }\AttributeTok{lty=}\DecValTok{2}\NormalTok{)}
+
+\FunctionTok{lines}\NormalTok{(B\_ratio, F\_ratio, }\AttributeTok{type=}\StringTok{"b"}\NormalTok{, }\AttributeTok{pch=}\DecValTok{19}\NormalTok{, }\AttributeTok{col=}\StringTok{"black"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Population_dynamics_module_assignment_files/figure-latex/kobe-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ssb\_ratio }\OtherTok{\textless{}{-}}\NormalTok{ SSB }\SpecialCharTok{/}\NormalTok{ SSB0}
+
+\FunctionTok{plot}\NormalTok{(yrs, ssb\_ratio, }\AttributeTok{type=}\StringTok{"b"}\NormalTok{, }\AttributeTok{pch=}\DecValTok{19}\NormalTok{,}
+     \AttributeTok{xlab=}\StringTok{"Year"}\NormalTok{, }\AttributeTok{ylab=}\StringTok{"SSB / SSB0"}\NormalTok{,}
+     \AttributeTok{main=}\FunctionTok{paste}\NormalTok{(}\StringTok{"Stock Status:"}\NormalTok{, stock),}
+     \AttributeTok{ylim=}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{max}\NormalTok{(}\FloatTok{1.2}\NormalTok{, ssb\_ratio)))}
+
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{h=}\NormalTok{USR}\SpecialCharTok{/}\NormalTok{SSB0, }\AttributeTok{col=}\StringTok{"blue"}\NormalTok{, }\AttributeTok{lty=}\DecValTok{2}\NormalTok{)  }\CommentTok{\# USR}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{h=}\NormalTok{LRP}\SpecialCharTok{/}\NormalTok{SSB0, }\AttributeTok{col=}\StringTok{"red"}\NormalTok{, }\AttributeTok{lty=}\DecValTok{2}\NormalTok{)   }\CommentTok{\# LRP}
+
+\FunctionTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{,}
+       \AttributeTok{legend=}\FunctionTok{c}\NormalTok{(}\StringTok{"USR"}\NormalTok{, }\StringTok{"LRP"}\NormalTok{),}
+       \AttributeTok{col=}\FunctionTok{c}\NormalTok{(}\StringTok{"black"}\NormalTok{,}\StringTok{"red"}\NormalTok{),}
+       \AttributeTok{lty=}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{),}
+       \AttributeTok{pch=}\FunctionTok{c}\NormalTok{(}\ConstantTok{NA}\NormalTok{,}\ConstantTok{NA}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Population_dynamics_module_assignment_files/figure-latex/usr_lrp-1.pdf}}
+
+\end{document}

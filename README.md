@@ -44,10 +44,9 @@ the effects of those modifications.
 The assignment for this module involves using an Rmarkdown simulation to
 examine the theoretical population dynamics for your fish stock. This
 will involve finding the necessary traits as inputs to run the
-population dynamics model (8 points),identifying differences between
-your stock and a pre-defined stock (5 points), and determining whether
-your stock maintains a more sustainable fishery than a pre-defined stock
-(2 points).
+population dynamics model for your stock (4 points) and answering
+questions related to the simulation about your stock’s dynamics (11
+pts).
 
 To access the assignment you will need to download
 `Population_dynamics_module_assignment.Rmd` and `simulated_pop_dy.RData`
