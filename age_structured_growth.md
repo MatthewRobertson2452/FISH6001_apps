@@ -1,12 +1,12 @@
 Age Structured Model Simulation
 ================
 Matt Robertson
-March 2025
+January 2026
 
 # Data Setup
 
-I am going to make a ficticious fish population and track its dynamics
-in response to an increasing and then stabilzing amount of fishing
+I am going to make a fictitious fish population and track its dynamics
+in response to an increasing and then stabilizing amount of fishing
 pressure.
 
 To do this, we first need to define the time over which we want to track
@@ -147,7 +147,8 @@ sim_ssb<-seq(from=0, to=max(SSB), by=1)
 
 plot(R~SSB, xlab="Spawning Stock Biomass", ylab="Recruitment (numbers)", las=1, lwd=2, pch=19, xlim=c(0,max(SSB)+100),
      ylim=c(0, max(R[2:nyears])+100))
-lines(sim_ssb, (sim_ssb)/(1+0.001*sim_ssb))
+lines(sim_ssb,   (4 * h * R0 * sim_ssb) /
+    (SSB0 * (1 - h) + sim_ssb * (5 * h - 1)))
 ```
 
 ![](age_structured_growth_files/figure-gfm/sr-1.png)<!-- -->
@@ -168,6 +169,11 @@ gauntlet of fishing at every age to be able to reach those oldest ages.
 
 ``` r
 library(ggplot2)
+```
+
+    ## Warning: package 'ggplot2' was built under R version 4.5.2
+
+``` r
 N_df<-data.frame(N=c(N),year=rep(yrs, 15), age=(rep(seq(from=1, to=15), each=51)))
 
 ggplot(data=N_df, aes(x=year, y=N))+xlab("Year")+ylab("Abundance at Age")+

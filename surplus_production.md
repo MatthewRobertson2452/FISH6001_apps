@@ -1,12 +1,12 @@
 Surplus Production Model
 ================
 Matt Robertson
-March 2025
+January 2026
 
 # Data Setup
 
-I am going to make a ficticious fish population and track its dynamics
-in response to an increasing and then stabilzing amount of fishing
+I am going to make a fictitious fish population and track its dynamics
+in response to an increasing and then stabilizing amount of fishing
 pressure.
 
 To do this, we first need to define the time over which we want to track

@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Data Setup
 
-I am going to make a ficticious fish population and track its dynamics in response to an increasing and then stabilzing amount of fishing pressure.
+I am going to make a fictitious fish population and track its dynamics in response to an increasing and then stabilizing amount of fishing pressure.
 
 To do this, we first need to define the time over which we want to track this population's dynamics as well as some basic components of this population's biology.
 
@@ -112,10 +112,15 @@ lines(Ftrend~yrs)
 Now that the species biology and fishery have been defined, we can run a theoretical simulation of how this fishery would impact this type of population. I have include some random variability into the annual fishing mortality and into the stock-recruitment relationship so no two simulations should ever be the same. I have hidden the code, because the details are not important for this class but we will look at how this population changes over time.
 
 ```{r, echo=FALSE}
-juv_N<-250
-starting_N<-juv_N*exp(-0.1*seq(from=0, to=14))
 
-N[1,]<-starting_N
+R0 <- 1000
+N[1,1] <- R0
+for(a in 2:nages){
+  N[1,a] <- N[1,a-1] * exp(-0.2)
+}
+
+alpha<-10000
+beta<-0.005
 
 log_N[1,]<-log(N[1,])
 B[1,]<-N[1,]*waa
@@ -123,29 +128,43 @@ SSB[1]<-sum(B[1,]*0.5*maa)
 
 
 for(i in 1:nyears){
-F[i,] <- Ftrend[i]*Fsel
+  F[i,] <- Ftrend[i]*Fsel
 }
 
 for(y in 1:nyears){
   for(a in 1:nages){
     if(Fsel[a]>0){
-F[y,a]<-abs(F[y,a]+rnorm(1,0,0.05))
+      F[y,a]<-abs(F[y,a]+rnorm(1,0,0.05))
     } 
-}
+  }
 }
 
+SSB0 <- sum(N[1,] * waa * maa * 0.5)
+h <- 0.75
 
+bev_holt <- function(SSB, R0, SSB0, h) {
+  (4 * h * R0 * SSB) /
+    (SSB0 * (1 - h) + SSB * (5 * h - 1))
+}
+
+sigma_R <- 0.7
 
 for(y in 2:nyears){
-  abs_R<-(SSB[y-1])/(1+0.001*SSB[y-1])
-  R[y]<-abs(abs_R +rnorm(1,0,abs_R/2))
+  R[y] <- bev_holt(SSB[y-1], R0, SSB0, h) *
+    exp(rnorm(1, -0.5 * sigma_R^2, sigma_R))
   N[y,1]<-R[y]
   B[y,1]<-N[y,1] * waa[1]
   
   for(a in 2:nages){
-      N[y,a]<-N[y-1,a-1]*exp(-(M[y-1,a-1]+F[y-1,a-1]))
-      B[y,a]<-N[y,a] * waa[a]
-    }
+    N[y,a]<-N[y-1,a-1]*exp(-(M[y-1,a-1]+F[y-1,a-1]))
+  }
+  N[y,nages] <- N[y-1,nages-1] * exp(-(M[y-1,nages-1] + F[y-1,nages-1])) +
+    N[y-1,nages]   * exp(-(M[y-1,nages]   + F[y-1,nages]))
+  
+  for(a in 2:nages){
+  B[y,a]<-N[y,a] * waa[a]
+  }
+  
   SSB[y]<-sum(B[y,]*maa*0.5)
 }
 ```
@@ -165,7 +184,8 @@ sim_ssb<-seq(from=0, to=max(SSB), by=1)
 
 plot(R~SSB, xlab="Spawning Stock Biomass", ylab="Recruitment (numbers)", las=1, lwd=2, pch=19, xlim=c(0,max(SSB)+100),
      ylim=c(0, max(R[2:nyears])+100))
-lines(sim_ssb, (sim_ssb)/(1+0.001*sim_ssb))
+lines(sim_ssb,   (4 * h * R0 * sim_ssb) /
+    (SSB0 * (1 - h) + sim_ssb * (5 * h - 1)))
 ```
 
 It is cool to see how the total population changed over time, but maybe it isn't super useful to us to understand exactly what is happening. The interesting thing with age-structured models is that we can actually zoom in to see how the abundance of each age has changed over time.
